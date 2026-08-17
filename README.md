@@ -1,72 +1,97 @@
 # Personal Expense Tracker
 
-A simple, beginner-friendly full-stack expense tracker.
+A full-stack personal expense tracker built with React, C++, Crow, and SQLite.
 
 - **Frontend:** React
-- **Backend:** C++ (using the [Crow](https://github.com/CrowCpp/Crow) web framework)
+- **Backend:** C++ with the Crow web framework
 - **Database:** SQLite
 
-Features:
-- Register and log in (passwords are hashed, never stored as plain text)
-- Add an expense with a title, amount, category, and date
-- View all your expenses
+## Features
+
+- Register and log in with password hashing
+- Add expenses with a title, amount, category, and date
+- View saved expenses
 - Delete expenses
 - Filter expenses by category
-- See your total spending at a glance
-- Clean, responsive interface that works on mobile and desktop
+- View total spending
+- Session-based authentication
+- Responsive interface for desktop and mobile
 
 ---
 
 ## 1. Project Structure
 
-```
+```text
 expense-tracker/
-├── backend/                 # C++ API server
-│   ├── CMakeLists.txt        # Build instructions (also downloads Crow for you)
+├── backend/
+│   ├── CMakeLists.txt
 │   └── src/
-│       ├── main.cpp          # All API routes (register, login, expenses, etc.)
-│       ├── database.hpp/.cpp # SQLite connection + table creation
-│       ├── auth.hpp          # Password hashing + session token helpers
-│       └── seed_data.cpp     # One-off program that adds demo/sample data
+│       ├── main.cpp
+│       ├── database.hpp
+│       ├── database.cpp
+│       ├── auth.hpp
+│       └── seed_data.cpp
 │
-└── frontend/                 # React application
+└── frontend/
+    ├── package.json
     ├── public/
-    │   └── index.html        # The single HTML page React renders into
+    │   └── index.html
     └── src/
-        ├── index.js          # React entry point
-        ├── App.js            # Decides: show login/register, or the dashboard
-        ├── App.css           # All styling for the app
-        ├── api.js            # Every fetch() call to the backend, in one place
+        ├── index.js
+        ├── App.js
+        ├── App.css
+        ├── api.js
         └── components/
-            ├── Login.js          # Login form
-            ├── Register.js       # Registration form
-            ├── Dashboard.js      # Main logged-in screen, ties everything together
-            ├── ExpenseForm.js    # Form to add a new expense
-            ├── ExpenseList.js    # Table of expenses with delete buttons
-            ├── ExpenseFilter.js  # Category filter dropdown
-            └── TotalSpending.js  # Total spending banner
+            ├── Login.js
+            ├── Register.js
+            ├── Dashboard.js
+            ├── ExpenseForm.js
+            ├── ExpenseList.js
+            ├── ExpenseFilter.js
+            └── TotalSpending.js
 ```
 
 ---
 
 ## 2. Requirements
 
-**Backend (C++):**
-- A C++17 compiler (g++, clang, or MSVC)
-- CMake 3.14+
-- SQLite3 development headers:
-  - **Ubuntu/Debian:** `sudo apt install libsqlite3-dev`
-  - **macOS (Homebrew):** `brew install sqlite3`
-  - **Windows:** easiest via [vcpkg](https://vcpkg.io): `vcpkg install sqlite3`
-- An internet connection the *first* time you build (CMake automatically
-  downloads the Crow framework for you — you don't need to install it by hand)
+### Backend
 
-**Frontend (React):**
-- [Node.js](https://nodejs.org/) (version 16 or newer) and npm
+- C++17 compiler
+- CMake 3.14+
+- SQLite3 development libraries
+- Standalone Asio
+- Internet connection during the first build so CMake can download Crow
+
+For Windows with MSYS2 UCRT64:
+
+```bash
+pacman -S mingw-w64-ucrt-x86_64-sqlite3
+pacman -S mingw-w64-ucrt-x86_64-asio
+```
+
+### Frontend
+
+- Node.js
+- npm
 
 ---
 
 ## 3. Setup & Run — Backend
+
+### Windows with MSYS2 / MinGW
+
+```powershell
+cd backend
+mkdir build
+cd build
+cmake -G "MinGW Makefiles" -DASIO_INCLUDE_DIR="C:/msys64/ucrt64/include" ..
+cmake --build .
+```
+
+### Other Platforms
+
+With the required dependencies installed:
 
 ```bash
 cd backend
@@ -76,42 +101,55 @@ cmake ..
 cmake --build .
 ```
 
-This produces two programs inside the `build` folder: `expense_server` and `seed_data`.
+The build creates two programs:
 
-**Add sample data (optional, but recommended for trying the app out):**
+- `expense_server` — runs the API server
+- `seed_data` — creates the demo account and sample expenses
+
+### Sample Data
+
+On Windows:
+
+```powershell
+.\seed_data.exe
+```
+
+On macOS/Linux:
 
 ```bash
 ./seed_data
 ```
 
-This creates a demo account and 8 sample expenses:
-- **username:** `demo`
-- **password:** `demo1234`
+This creates a demo account and 8 sample expenses.
 
-**Start the server:**
+**Demo Account**
+
+```text
+Username: demo
+Password: demo1234
+```
+
+### Start the Backend
+
+Windows:
+
+```powershell
+.\expense_server.exe
+```
+
+macOS/Linux:
 
 ```bash
 ./expense_server
 ```
 
-You should see:
-```
-Database ready (tables created if they didn't already exist).
-Expense tracker server running at http://localhost:5000
-```
-
-Leave this running — it's your API server. A file called `expenses.db` will
-appear in the `build` folder; that's your SQLite database.
-
-> On Windows, the built executables will be named `expense_server.exe` and
-> `seed_data.exe`, likely inside a `Debug` or `Release` subfolder depending
-> on your generator.
+The backend API runs on port `5000`. The SQLite database is stored as `expenses.db` in the build directory.
 
 ---
 
 ## 4. Setup & Run — Frontend
 
-Open a **new** terminal (leave the backend running in the first one):
+Open another terminal while keeping the backend running:
 
 ```bash
 cd frontend
@@ -119,97 +157,71 @@ npm install
 npm start
 ```
 
-This opens the app in your browser at **http://localhost:3000**. It talks to
-the backend at `http://localhost:5000` automatically (see `src/api.js`).
+The React development server starts the application locally.
+
+Frontend API requests use the `/api` path and are forwarded to the C++ backend through the proxy configured in `package.json`.
 
 ---
 
-## 5. Trying It Out
+## 5. Usage
 
-1. Go to http://localhost:3000
-2. Log in with the demo account (`demo` / `demo1234`) — or click "Register
-   here" to create your own account
-3. Add an expense using the form on the left
-4. Use the category dropdown to filter your expenses
-5. Watch the "Total Spending" banner update to match the filter
-6. Delete an expense with the "Delete" button on its row
+1. Log in using the demo account or register a new account.
+2. Add an expense with a title, amount, category, and date.
+3. View your saved expenses on the dashboard.
+4. Filter expenses by category.
+5. View the total spending for the currently displayed expenses.
+6. Delete expenses using the Delete button.
 
----
-
-## 6. How Authentication Works (in plain terms)
-
-1. You register with a username and password. The backend hashes your
-   password (mixed with a random "salt") before saving it — the real
-   password is never stored anywhere.
-2. When you log in, the backend checks your password against the stored
-   hash. If it matches, it creates a random "session token" and remembers
-   it in memory, then sends it to your browser as a cookie.
-3. Every request your browser makes afterward automatically includes that
-   cookie, so the backend knows which user is asking without you having to
-   log in again on every page load.
-4. Logging out simply forgets that token.
-
-This is a simplified approach meant for learning. A production app would
-typically use a proper session store (like Redis) and a slower, purpose-built
-password hashing algorithm (like bcrypt or Argon2) instead of SHA-256.
+Each account only has access to its own expenses.
 
 ---
 
-## 7. Folder & File Purpose Reference
+## 6. Authentication
 
-### Backend (`backend/`)
-- **`CMakeLists.txt`** — Tells CMake how to build the project. It
-  automatically downloads Crow (the web framework) so you don't need to
-  install it separately, and links against your system's SQLite3 library.
-- **`src/database.hpp` / `database.cpp`** — Opens the SQLite database file
-  and creates the `users` and `expenses` tables if they don't exist yet.
-- **`src/auth.hpp`** — Contains a from-scratch SHA-256 implementation plus
-  helper functions for hashing/verifying passwords and generating random
-  session tokens.
-- **`src/main.cpp`** — The heart of the backend. Defines every API route
-  (`/api/register`, `/api/login`, `/api/expenses`, etc.), reads/writes to
-  the database, and manages login sessions.
-- **`src/seed_data.cpp`** — A separate small program (not part of the
-  server) that inserts a demo user and sample expenses into the database,
-  so you have something to look at immediately.
+When a user registers, their password is combined with a randomly generated salt and hashed before being stored in SQLite. Plain-text passwords are not stored.
 
-### Frontend (`frontend/`)
-- **`public/index.html`** — The one and only HTML page. React takes over
-  the `<div id="root">` inside it and renders everything else.
-- **`src/index.js`** — The entry point; tells React to render `<App />`.
-- **`src/App.js`** — The "traffic controller" of the frontend. Checks if
-  you're logged in and shows either the Login/Register screen or the
-  Dashboard.
-- **`src/App.css`** — All the visual styling, written in plain CSS with
-  Flexbox/Grid for a responsive, mobile-friendly layout.
-- **`src/api.js`** — Every network call to the backend lives here. If you
-  ever need to change the backend's URL or how errors are handled, this is
-  the only file you need to touch.
-- **`src/components/Login.js`** — The login form.
-- **`src/components/Register.js`** — The registration form.
-- **`src/components/Dashboard.js`** — The main screen after logging in. It
-  fetches categories/expenses and passes data down to the smaller
-  components below.
-- **`src/components/ExpenseForm.js`** — The "add a new expense" form.
-- **`src/components/ExpenseList.js`** — Renders the table of expenses and
-  their delete buttons.
-- **`src/components/ExpenseFilter.js`** — The category filter dropdown.
-- **`src/components/TotalSpending.js`** — The banner showing the total of
-  whatever expenses are currently displayed.
+When a user logs in successfully, the backend generates a random session token and associates it with that user. The token is sent to the browser as a cookie and included with future API requests.
+
+Protected routes use the session token to determine which user is making the request. Logging out removes the active session.
+
+The authentication system is designed for the scope of this project. A production application would typically use persistent session storage and a dedicated password-hashing algorithm such as bcrypt or Argon2.
+
+---
+
+## 7. File Reference
+
+### Backend
+
+- **`CMakeLists.txt`** — Configures the C++ build, downloads Crow, and links the required libraries.
+- **`src/database.hpp` / `database.cpp`** — Handles the SQLite connection and database tables.
+- **`src/auth.hpp`** — Contains password hashing, verification, salt generation, and session-token utilities.
+- **`src/main.cpp`** — Defines the API routes, handles requests, and manages user sessions.
+- **`src/seed_data.cpp`** — Creates the demo account and sample expense data.
+
+### Frontend
+
+- **`public/index.html`** — HTML entry page for the React application.
+- **`src/index.js`** — React entry point.
+- **`src/App.js`** — Controls the authentication and dashboard views.
+- **`src/App.css`** — Contains the application's styling.
+- **`src/api.js`** — Handles communication between the frontend and backend.
+- **`src/components/Login.js`** — Login form.
+- **`src/components/Register.js`** — Registration form.
+- **`src/components/Dashboard.js`** — Main expense dashboard.
+- **`src/components/ExpenseForm.js`** — Form for adding expenses.
+- **`src/components/ExpenseList.js`** — Displays and deletes expenses.
+- **`src/components/ExpenseFilter.js`** — Category filtering.
+- **`src/components/TotalSpending.js`** — Displays total spending.
 
 ---
 
 ## 8. Common Issues
 
-- **"Could not find SQLite3"** during `cmake ..` — install the SQLite3
-  development package for your OS (see Requirements above), then re-run
-  `cmake ..`.
-- **Frontend can't reach the backend / CORS errors** — make sure
-  `expense_server` is running on port 5000 *before* you use the app, and
-  that you're accessing the frontend at `http://localhost:3000` (not `127.0.0.1`,
-  since the backend is configured to allow `localhost` specifically).
-- **First `cmake ..` takes a while** — that's expected the first time,
-  since it's downloading the Crow framework. Later builds are fast.
+- **CMake cannot find SQLite3** — Make sure the SQLite3 development package is installed for your compiler.
+- **CMake cannot find Asio** — On MSYS2 UCRT64, install `mingw-w64-ucrt-x86_64-asio` and provide the Asio include directory when running CMake.
+- **Frontend cannot reach the backend** — Make sure `expense_server` is running before using the frontend.
+- **Demo login does not work** — Run `seed_data` to create the demo account before logging in.
+- **First CMake configuration takes longer** — CMake downloads the Crow framework during the initial build.
 
 ---
 
@@ -217,5 +229,5 @@ password hashing algorithm (like bcrypt or Argon2) instead of SHA-256.
 
 - Add support for editing existing expenses
 - Add monthly spending charts and visualizations
-- Export expense data to CSV
+- Export expenses to CSV
 - Add customizable budget limits and spending alerts
