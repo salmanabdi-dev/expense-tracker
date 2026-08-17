@@ -213,11 +213,9 @@ password hashing algorithm (like bcrypt or Argon2) instead of SHA-256.
 
 ---
 
-## 9. Ideas for Extending This Project (optional)
+## Future Improvements
 
-- Edit an existing expense (not just add/delete)
-- Monthly spending charts
-- Export expenses to CSV
-- Budget limits with alerts when you're close to going over
-
-Enjoy building on top of this project!
+- Add support for editing existing expenses
+- Add monthly spending charts and visualizations
+- Export expense data to CSV
+- Add customizable budget limits and spending alerts
