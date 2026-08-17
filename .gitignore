@@ -1,0 +1,25 @@
+# C++ / CMake build files
+backend/build/
+build/
+*.exe
+*.o
+
+# React / Node
+frontend/node_modules/
+node_modules/
+frontend/build/
+
+# Database files
+*.db
+*.sqlite
+*.sqlite3
+
+# Environment / secrets
+.env
+.env.*
+!.env.example
+
+# VS Code / OS files
+.vscode/
+.DS_Store
+Thumbs.db
