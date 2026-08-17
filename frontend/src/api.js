@@ -8,7 +8,7 @@
 // our session cookie with every request, which is how the backend knows
 // who is logged in.
 
-const BASE_URL = "http://localhost:5000/api";
+const BASE_URL = "/api";
 
 // A small helper that wraps fetch() and turns a non-OK response into a
 // thrown error with a readable message (the backend's own error message

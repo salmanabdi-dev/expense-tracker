@@ -220,4 +220,4 @@ password hashing algorithm (like bcrypt or Argon2) instead of SHA-256.
 - Export expenses to CSV
 - Budget limits with alerts when you're close to going over
 
-
+Enjoy building on top of this project!

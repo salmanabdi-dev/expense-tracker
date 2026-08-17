@@ -22,7 +22,12 @@ function ExpenseForm({ categories, onExpenseAdded }) {
     setSubmitting(true);
 
     try {
-      await addExpense({ title, amount, category, date });
+      await addExpense({
+  title,
+  amount: Number(amount),
+  category,
+  date,
+});
       // Reset the form after a successful add.
       setTitle("");
       setAmount("");

@@ -111,8 +111,13 @@ int main() {
         auto body = crow::json::load(req.body);
         if (!body) return error_response(400, "Invalid JSON body.");
 
-        std::string username = body.has("username") ? body["username"].s() : "";
-        std::string password = body.has("password") ? body["password"].s() : "";
+        // NOTE: both branches of this ternary are wrapped in std::string(...)
+        // on purpose. body["x"].s() returns crow::json::detail::r_string, and
+        // some compilers (e.g. newer GCC) can't find an unambiguous common type
+        // between r_string and a "" string literal in a ternary. Making both
+        // sides an explicit std::string avoids the ambiguity.
+        std::string username = body.has("username") ? std::string(body["username"].s()) : std::string("");
+        std::string password = body.has("password") ? std::string(body["password"].s()) : std::string("");
 
         if (username.empty() || password.empty()) {
             return error_response(400, "Username and password are required.");
@@ -153,8 +158,13 @@ int main() {
         auto body = crow::json::load(req.body);
         if (!body) return error_response(400, "Invalid JSON body.");
 
-        std::string username = body.has("username") ? body["username"].s() : "";
-        std::string password = body.has("password") ? body["password"].s() : "";
+        // NOTE: both branches of this ternary are wrapped in std::string(...)
+        // on purpose. body["x"].s() returns crow::json::detail::r_string, and
+        // some compilers (e.g. newer GCC) can't find an unambiguous common type
+        // between r_string and a "" string literal in a ternary. Making both
+        // sides an explicit std::string avoids the ambiguity.
+        std::string username = body.has("username") ? std::string(body["username"].s()) : std::string("");
+        std::string password = body.has("password") ? std::string(body["password"].s()) : std::string("");
 
         sqlite3_stmt* stmt;
         sqlite3_prepare_v2(db, "SELECT id, password_hash FROM users WHERE username = ?", -1, &stmt, nullptr);
@@ -299,9 +309,14 @@ int main() {
         auto body = crow::json::load(req.body);
         if (!body) return error_response(400, "Invalid JSON body.");
 
-        std::string title = body.has("title") ? body["title"].s() : "";
-        std::string category = body.has("category") ? body["category"].s() : "";
-        std::string date = body.has("date") ? body["date"].s() : "";
+        // NOTE: both branches of this ternary are wrapped in std::string(...)
+        // on purpose. body["x"].s() returns crow::json::detail::r_string, and
+        // some compilers (e.g. newer GCC) can't find an unambiguous common type
+        // between r_string and a "" string literal in a ternary. Making both
+        // sides an explicit std::string avoids the ambiguity.
+        std::string title = body.has("title") ? std::string(body["title"].s()) : std::string("");
+        std::string category = body.has("category") ? std::string(body["category"].s()) : std::string("");
+        std::string date = body.has("date") ? std::string(body["date"].s()) : std::string("");
 
         if (title.empty() || category.empty() || date.empty()) {
             return error_response(400, "Title, category, and date are all required.");
